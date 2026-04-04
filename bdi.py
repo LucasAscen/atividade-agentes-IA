@@ -2,6 +2,8 @@
 from Agentes.drones import observar_drone
 from Cidade import cidade, gerar_evento
 from Agentes.bombeiros import Bombeiros
+from Agentes.socorrista_sequencial import SocorristaSequencial
+from Agentes.socorrista_otimizador import SocorristaOtimizador
 
 class BDI:
 
@@ -13,6 +15,8 @@ class BDI:
         self.b2 = Bombeiros((0,7), "Q2")
         self.b3 = Bombeiros((7,0), "Q3")
         self.b4 = Bombeiros((7,7), "Q4")
+        self.socorrista_seq = SocorristaSequencial()
+        self.socorrista_ot = SocorristaOtimizador()
 
     def receber_fogo(self, x, y):
         celula_fogos = (x, y)
@@ -36,6 +40,7 @@ class BDI:
             return 'Quadrante 4'
         
     def decidir_acoes(self):
+       
         for (x,y) in self.fogos:
             quadrante = self.descobrir_quadrante(x,y)
             print(f'Fogo no {quadrante} - Enviar equipe de combate a incêndio')
@@ -48,12 +53,17 @@ class BDI:
                 self.b3.se_mover(x,y,cidade)
             else:
                 self.b4.se_mover(x,y,cidade)
+
         for (x,y) in self.vitimas:
             quadrante = self.descobrir_quadrante(x,y)
             print(f'Vitima no {quadrante} - Enviar equipe de resgate')
-
-        
-
+        if self.vitimas:
+            lista = list(self.vitimas)
+            self.socorrista_seq.receber_lista(lista)
+            self.socorrista_ot.receber_lista(lista)
+            self.socorrista_seq.resgatar(cidade)
+            self.socorrista_ot.resgatar(cidade)
+     
     def apagar_fogo(self, x,y):
         if (x,y) in self.fogos:
             self.fogos.remove((x,y))
