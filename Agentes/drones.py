@@ -1,18 +1,28 @@
-#aqui jaz o agente reativo simples 
+import random
 
-from Cidade import cidade, gerar_evento
+class Drone:
+    def __init__(self, tamanho):
+        self.x = random.randint(0, tamanho - 1)
+        self.y = random.randint(0, tamanho - 1)
+        self.tamanho = tamanho
 
-#basicamente um sensor ambulante limitado 
+    def mover(self):
+        direcoes = [(1,0), (-1,0), (0,1), (0,-1)]
+        dx, dy = random.choice(direcoes)
 
-def observar_drone(cidade, bdi):
-    for i in range(len(cidade)):
-        for j in range(len(cidade[i])):
-            if cidade[i][j]:# verifico as coordenadas 
-                if 'fogo' in cidade[i][j]: #se tiver fogo, reporta o fogo
-                    #cidade[x][y].reportar('fogo nessa area')
-                    print(f'Fogo detectado na coordenada ({i}, {j})')
-                    bdi.receber_fogo(i, j)
-                if 'vitima' in cidade[i][j]:
-                    #cidade[x][y].reportar('vitima nessa area')
-                    print(f'Vitima detectada na coordenada ({i}, {j})')
-                    bdi.receber_vitima(i, j)
+        novo_x = self.x + dx
+        novo_y = self.y + dy
+
+        if 0 <= novo_x < self.tamanho:
+            self.x = novo_x
+        if 0 <= novo_y < self.tamanho:
+            self.y = novo_y
+
+    def observar(self, cidade, bdi):
+        if 'fogo' in cidade[self.x][self.y]:
+            print(f"Drone detectou fogo em ({self.x}, {self.y})")
+            bdi.receber_fogo(self.x, self.y)
+
+        if 'vitima' in cidade[self.x][self.y]:
+            print(f"Drone detectou vítima em ({self.x}, {self.y})")
+            bdi.receber_vitima(self.x, self.y)

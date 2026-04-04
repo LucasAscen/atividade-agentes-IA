@@ -1,6 +1,3 @@
-from Agentes.drones import observar_drone
-from Cidade import cidade, gerar_evento
-
 class Bombeiros:
 
     def __init__(self, posicao, quadrante):
