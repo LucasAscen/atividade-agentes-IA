@@ -14,9 +14,12 @@ def gerar_evento(cidade):
         y = random.randint(0,n-1)
 
 
-        for evento in cidade[x][y]: #verifica se ja existe um evento na coordenada
-            if escolha not in cidade[x][y]: #se o evento escolhido nao existir na coordenada, adiciona o evento
+
+        if escolha not in cidade[x][y]: #se o evento escolhido nao existir na coordenada, adiciona o evento
                 cidade[x][y].append(escolha)
-                break 
+                print(f"Evento {escolha} gerado em ({x}, {y})")  # debug
+                break
+
+                
             
         

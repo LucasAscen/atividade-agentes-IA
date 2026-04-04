@@ -1,11 +1,12 @@
-from BDI import bdi
 from Agentes.drones import observar_drone
+from Cidade import cidade, gerar_evento
 
 class Bombeiros:
 
     def __init__(self, posicao, quadrante):
         self.posicao = posicao
         self.quadrante = quadrante
+        
 
     def se_mover(self,x,y,cidade):
         self.posicao = (x,y) #atualiza a posicao do bombeiro
@@ -17,4 +18,3 @@ class Bombeiros:
         else:
             print(f"bombeiro se moveu para a coordenada ({x}, {y}), mas nao encontrou fogo")
 
-    
