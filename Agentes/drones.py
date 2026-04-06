@@ -18,11 +18,14 @@ class Drone:
         if 0 <= novo_y < self.tamanho:
             self.y = novo_y
 
-    def observar(self, cidade, bdi):
-        if 'fogo' in cidade[self.x][self.y]:
-            print(f"Drone detectou fogo em ({self.x}, {self.y})")
-            bdi.receber_fogo(self.x, self.y)
 
-        if 'vitima' in cidade[self.x][self.y]:
-            print(f"Drone detectou vítima em ({self.x}, {self.y})")
-            bdi.receber_vitima(self.x, self.y)
+    def observar(self, cidade, bdi):
+        celula = cidade[self.x][self.y]
+
+        if 'fogo' in celula and (self.x, self.y) not in bdi.fogos:
+                print(f"Drone detectou fogo em ({self.x}, {self.y})")
+                bdi.receber_fogo(self.x, self.y)#afim de evitar que o drone envie a mesma informação várias vezes, ele só envia se a coordenada ainda não estiver na lista de fogos do BDI
+
+        if 'vitima' in celula and (self.x, self.y) not in bdi.vitimas:
+                print(f"Drone detectou vítima em ({self.x}, {self.y})")
+                bdi.receber_vitima(self.x, self.y)

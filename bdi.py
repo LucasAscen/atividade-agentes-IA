@@ -24,12 +24,10 @@ class BDI:
 
 
     def receber_fogo(self,x,y):
-        self.fogos.add((x,y))
-
+        self.fogos.add((x, y))
 
     def receber_vitima(self,x,y):
-        self.vitimas.add((x,y))
-
+        self.vitimas.add((x, y))
 
     def quadrante(self,x,y):
 
