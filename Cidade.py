@@ -2,6 +2,7 @@ import random
 
 n = 8 #matriz 8x8
 cidade = [[[] for i in range(n)] for j in range(n)]
+hospital = (0, 0)  # posição fixa do hospital
 
 #gerar eventos aleatorios na cidade
 def gerar_evento(cidade):

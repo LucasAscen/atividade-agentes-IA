@@ -1,11 +1,13 @@
 import random
 
 import pygame
-from Cidade import cidade, gerar_evento, n
+from Cidade import cidade, gerar_evento, n, hospital
 from Agentes.drones import Drone
 from bdi import BDI
 
 pygame.init()
+ja_teve_vitima = False
+fim_simulacao = False
 
 CEL = 60
 tela = pygame.display.set_mode((n*CEL, n*CEL))
@@ -20,16 +22,14 @@ fonte = pygame.font.SysFont(None, 24)
 # 🔹 UPDATE (lógica do sistema)
 def atualizar():
     # gera evento com chance (não todo frame)
-    if random.random() < 0.1:
+    if random.random() < 0.4:
         gerar_evento(cidade)
 
     drone.mover()
     drone.observar(cidade, bdi)
 
     bdi.decidir_acoes()
-    for b in bdi.bombeiros.values():
-        b.atualizar(cidade)
-
+    
 
 #DRAW 
 def desenhar():
@@ -55,6 +55,12 @@ def desenhar():
 
     t_fogo_bdi = fonte.render(f"Fogos (BDI): {len(bdi.fogos)}", True, (0,0,0))
     t_vit_bdi = fonte.render(f"Vitimas (BDI): {len(bdi.vitimas)}", True, (0,0,0))
+
+    t1 = fonte.render(f"Seq passos: {bdi.seq.passos}", True, (0,0,0))
+    tela.blit(t1, (10, 90))
+
+    t2 = fonte.render(f"Util passos: {bdi.ot.passos}", True, (0,0,0))
+    tela.blit(t2, (10, 110))
     #################
     
     tela.blit(t_fogo_real, (10, 10))
@@ -92,6 +98,13 @@ def desenhar():
     # drone
     pygame.draw.circle(tela, (0,200,0), (drone.x*CEL+30, drone.y*CEL+30), 8)
 
+    # hospital (verde)
+    hx, hy = hospital
+    pygame.draw.rect(tela, (0,255,0), (hy*CEL, hx*CEL, CEL, CEL))
+
+    t = fonte.render("H", True, (0,0,0))
+    tela.blit(t, (hy*CEL+5, hx*CEL+5))
+
     # bombeiros
     for b in bdi.bombeiros.values():
         pygame.draw.circle(tela, (255,140,0), (b.posicao[0]*CEL+30, b.posicao[1]*CEL+30), 8)
@@ -112,6 +125,18 @@ def desenhar():
         t2 = fonte.render(f"Util: {bdi.ot.passos}", True, (0,0,0))
         tela.blit(t2, (10,70))
 
+
+    if fim_simulacao:
+        vencedor = "Empate"  # valor padrão
+
+        if bdi.seq.passos < bdi.ot.passos:
+            vencedor = "Sequencial venceu"
+        elif bdi.seq.passos > bdi.ot.passos:
+            vencedor = "Otimizador venceu"
+
+        t = fonte.render(vencedor, True, (0,0,0))
+        tela.blit(t, (10, 140))
+
     pygame.display.update()
 
 
@@ -122,8 +147,27 @@ while True:
         if e.type == pygame.QUIT:
             pygame.quit()
             exit()
+    if not fim_simulacao:
+        atualizar()
 
-    atualizar()
+        # marca que já existiu vítima
+        if bdi.vitimas:
+            ja_teve_vitima = True
+
+        # condição de fim correta
+        if ja_teve_vitima and not bdi.vitimas and not fim_simulacao:
+         fim_simulacao = True
+
+        print("\n===== RESULTADO FINAL =====")
+        print(f"Sequencial passos: {bdi.seq.passos}")
+        print(f"Otimizador passos: {bdi.ot.passos}")
+
+        if bdi.seq.passos < bdi.ot.passos:
+                print("Sequencial foi mais eficiente")
+        elif bdi.seq.passos > bdi.ot.passos:
+                print("Otimizador foi mais eficiente")
+        else:
+                print("Empate")
+
     desenhar()
-
     clock.tick(5)

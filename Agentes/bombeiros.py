@@ -19,14 +19,14 @@ class Bombeiros:
 
         if self.destino:
             dx, dy = self.destino
-
             x, y = self.posicao
 
             if x < dx:
                 x += 1
             elif x > dx:
                 x -= 1
-            elif y < dy:
+
+            if y < dy:
                 y += 1
             elif y > dy:
                 y -= 1
@@ -35,8 +35,7 @@ class Bombeiros:
 
             # chegou no destino
             if self.posicao == self.destino:
-                if "fogo" in cidade[x][y]:
-                    cidade[x][y].remove("fogo")
+    
                     print(f"Bombeiro apagou fogo em {self.posicao}")
-
-                self.destino = None
+                    #estava removendo o fogo aqui, mas como o bombeiro se move, ele pode chegar em uma celula com fogo e vitima, e nesse caso ele só remove o fogo, deixando a vitima lá, o que não é ideal. Então agora o bombeiro só remove o fogo quando se move para uma celula com fogo, e não quando chega no destino, assim ele pode apagar o fogo mesmo que tenha uma vitima na mesma celula.
+                    self.destino = None

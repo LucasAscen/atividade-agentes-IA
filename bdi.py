@@ -1,7 +1,7 @@
 from Agentes.bombeiros import Bombeiros
 from Agentes.socorrista_sequencial import SocorristaSequencial
 from Agentes.socorrista_otimizador import SocorristaOtimizador
-from Cidade import cidade
+from Cidade import cidade, hospital
 
 
 class BDI:
@@ -10,6 +10,7 @@ class BDI:
 
         self.fogos = set()
         self.vitimas = set()
+        self.resgate_ativo = False
 
         # bombeiros por quadrante
         self.bombeiros = {
@@ -58,33 +59,42 @@ class BDI:
 
             for f in fogos:
 
-                self.bombeiros[q].se_mover(f[0],f[1],cidade)
+                # definir destino
+                if self.bombeiros[q].destino is None:
+                    self.bombeiros[q].destino = f
 
 
             # apoio extra se houver mais de 1 fogo
             if len(fogos) > 1:
 
-                for q2 in self.bombeiros:
+                for q2, b in self.bombeiros.items():
 
-                    if q2 != q:
-
-                        self.bombeiros[q2].se_mover(fogos[1][0],fogos[1][1],cidade)
+                    if q2 != q and b.destino is None:
+                        b.destino = fogos[1]
                         break
+
+
+        # fazendo os diabos andar
+        for b in self.bombeiros.values():
+            b.atualizar(cidade)
 
 
         self.limpar_crencas()
 
 
         # enviar vítimas para os dois socorristas
-        if self.vitimas:
-
+        if len(self.vitimas) >= 4 and not self.resgate_ativo:
+            self.resgate_ativo = True
+            import random
             lista = list(self.vitimas)
+            random.shuffle(lista)
 
             self.seq.receber_lista(lista)
             self.ot.receber_lista(lista)
 
-            self.seq.resgatar(cidade)
-            self.ot.resgatar(cidade)
-
+            self.seq.resgatar(cidade,hospital)
+            self.ot.resgatar(cidade,hospital)
+        if not self.vitimas:
+            self.resgate_ativo = False
 
         self.limpar_crencas()
