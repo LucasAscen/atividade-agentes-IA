@@ -50,12 +50,10 @@ def main():
                 pygame.draw.rect(tela, cor, rect)
                 pygame.draw.rect(tela, COR["grid"], rect, 1)
 
-        # Linhas divisórias de quadrante — grossas e escuras
         meio = 4 * CELL
         pygame.draw.line(tela, COR["quadrante"], (meio, 0), (meio, ALTURA), 3)
         pygame.draw.line(tela, COR["quadrante"], (0, meio), (TAM * CELL, meio), 3)
 
-        # Labels de quadrante nos cantos
         offset = 6
         labels = [
             ("Q1", offset,              offset),
@@ -67,7 +65,6 @@ def main():
             s = fonte_m.render(lbl, True, COR["quadrante"])
             tela.blit(s, (lx, ly))
 
-        # Hospital
         hx, hy = HOSPITAL
         s = fonte_m.render("H+", True, COR["hosp_txt"])
         tela.blit(s, (hy*CELL + CELL//2 - 10, hx*CELL + CELL//2 - 8))
